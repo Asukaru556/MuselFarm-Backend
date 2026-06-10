@@ -1,0 +1,39 @@
+version: '3.8'
+
+services:
+  postgres_db:
+    image: postgres:15-alpine
+    container_name: mussel_postgres_container
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: root
+      POSTGRES_DB: mussel_farm_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - farm_network
+
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: mussel_backend_container
+    ports:
+      - "3000:3000"
+    environment:
+      DATABASE_URL: "postgresql://postgres:root@postgres_db:5432/mussel_farm_db?schema=public"
+      JWT_SECRET: "super-secret-key-change-me-in-production"
+    depends_on:
+      - postgres_db
+    command: sh ./start.sh
+    networks:
+      - farm_network
+
+volumes:
+  postgres_data:
+
+networks:
+  farm_network:
+    driver: bridge

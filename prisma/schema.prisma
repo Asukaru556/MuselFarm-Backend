@@ -15,5 +15,21 @@ model User {
   role          String   @default("biologist")
   created_at    DateTime @default(now())
 
+  sessions      UserSession[]
+
   @@map("users")
+}
+
+model UserSession {
+  id                 Int      @id @default(autoincrement())
+  user_id            Int
+  refresh_token_hash String
+  expires_at         DateTime
+  created_at         DateTime @default(now())
+  ip_address         String?
+  user_agent         String?
+
+  user               User     @relation(fields: [user_id], references: [id], onDelete: Cascade)
+
+  @@map("user_sessions")
 }

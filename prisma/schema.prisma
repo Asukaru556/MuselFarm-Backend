@@ -33,3 +33,44 @@ model UserSession {
 
   @@map("user_sessions")
 }
+
+model Farm {
+  id          Int        @id @default(autoincrement())
+  name        String     @unique
+  region      String
+  description String?
+  created_at  DateTime   @default(now())
+
+  locations   Location[]
+
+  @@map("farms")
+}
+
+model Location {
+  id         Int      @id @default(autoincrement())
+  farm_id    Int
+  name       String
+  latitude   Decimal  @db.Decimal(9, 6)
+  longitude  Decimal  @db.Decimal(9, 6)
+  depth      Decimal  @db.Decimal(5, 2)
+  created_at DateTime @default(now())
+
+  farm       Farm     @relation(fields: [farm_id], references: [id], onDelete: Cascade)
+  lines      Line[]
+
+  @@map("locations")
+}
+
+model Line {
+  id          Int      @id @default(autoincrement())
+  location_id Int
+  name        String
+  depth       Decimal  @db.Decimal(5, 2)
+  length      Decimal  @db.Decimal(5, 2)
+  status      String   @default("active")
+  created_at  DateTime @default(now())
+
+  location    Location @relation(fields: [location_id], references: [id], onDelete: Cascade)
+
+  @@map("lines")
+}

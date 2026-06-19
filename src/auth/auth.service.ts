@@ -127,4 +127,12 @@ export class AuthService {
 
     return { id: user.id, login: user.login, role: user.role, full_name: user.full_name };
   }
+
+  async logout(userId: number) {
+    await (this.prisma as any).userSession.deleteMany({
+      where: { user_id: userId },
+    });
+    
+    return { message: 'Вы успешно вышли из системы' };
+  }
 }

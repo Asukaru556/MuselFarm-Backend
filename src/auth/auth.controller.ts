@@ -1,5 +1,6 @@
-import { Controller, Post, Body, HttpCode, HttpStatus, Req, Ip } from '@nestjs/common';
+import { Controller, Post, Body, HttpCode, HttpStatus, Req, Ip, UseGuards } from '@nestjs/common';
 import { RegisterDto } from './dto/register.dto';
+import { AuthGuard } from '@nestjs/passport';
 import { AuthService } from './auth.service';
 import { LoginDto } from './dto/login.dto';
 import { RefreshDto } from './dto/refresh.dto';
@@ -37,8 +38,8 @@ export class AuthController {
   }
 
   @Post('logout')
-  @HttpCode(HttpStatus.OK)
-  async logout() {
-    return { message: 'Вы успешно вышли из системы' };
+  @UseGuards(AuthGuard('jwt'))
+  async logout(@Req() req: any) {
+    return this.authService.logout(req.user.id);
   }
 }

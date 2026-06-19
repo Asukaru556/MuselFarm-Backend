@@ -16,6 +16,8 @@ model User {
   created_at    DateTime @default(now())
 
   sessions      UserSession[]
+  bio_observations BioObservation[]
+  operational_events OperationalEvent[]
 
   @@map("users")
 }
@@ -71,6 +73,94 @@ model Line {
   created_at  DateTime @default(now())
 
   location    Location @relation(fields: [location_id], references: [id], onDelete: Cascade)
+  mussel_batches MusselBatch[]
+  sensors        Sensor[]
+  measurements Measurement[]
+  bio_observations BioObservation[]
+  operational_events OperationalEvent[]
 
   @@map("lines")
+}
+
+model MusselBatch {
+  id            Int      @id @default(autoincrement())
+  line_id       Int
+  batch_number  String   @unique
+  seed_date     DateTime
+  initial_count Int
+  status        String   @default("growing")
+  created_at    DateTime @default(now())
+
+  line          Line     @relation(fields: [line_id], references: [id], onDelete: Cascade)
+  bio_observations BioObservation[]
+
+  @@map("mussel_batches")
+}
+
+model Sensor {
+  id            Int      @id @default(autoincrement())
+  line_id       Int
+  name          String
+  sensor_type   String   
+  serial_number String   @unique
+  is_active     Boolean  @default(true)
+  created_at    DateTime @default(now())
+
+  line          Line     @relation(fields: [line_id], references: [id], onDelete: Cascade)
+  measurements Measurement[]
+
+  @@map("sensors")
+}
+
+model Measurement {
+  id          Int      @id @default(autoincrement())
+  sensor_id   Int
+  line_id     Int
+  parameter   String   
+  value       Decimal  @db.Decimal(10, 4)
+  unit        String   
+  measured_at DateTime
+  created_at  DateTime @default(now())
+
+  sensor      Sensor   @relation(fields: [sensor_id], references: [id], onDelete: Cascade)
+  line        Line     @relation(fields: [line_id], references: [id], onDelete: Cascade)
+
+  @@map("measurements")
+}
+
+model BioObservation {
+  id                Int      @id @default(autoincrement())
+  line_id           Int
+  batch_id          Int
+  fouling_percent   Decimal  @db.Decimal(5, 2)
+  mussel_condition  String
+  mortality_percent Decimal  @db.Decimal(5, 2)
+  density           Int      
+  avg_size          Decimal  @db.Decimal(5, 2) 
+  avg_weight        Decimal  @db.Decimal(5, 2) 
+  pathogen_present  Boolean  @default(false)
+  pathogen_type     String?
+  comment           String?
+  created_by        Int      
+  observed_at       DateTime @default(now())
+
+  line              Line         @relation(fields: [line_id], references: [id], onDelete: Cascade)
+  batch             MusselBatch  @relation(fields: [batch_id], references: [id], onDelete: Cascade)
+  user              User         @relation(fields: [created_by], references: [id], onDelete: Cascade)
+
+  @@map("bio_observations")
+}
+
+model OperationalEvent {
+  id          Int      @id @default(autoincrement())
+  line_id     Int
+  event_type  String   
+  description String
+  event_time  DateTime @default(now())
+  created_by  Int      
+
+  line        Line     @relation(fields: [line_id], references: [id], onDelete: Cascade)
+  user        User     @relation(fields: [created_by], references: [id], onDelete: Cascade)
+
+  @@map("operational_events")
 }

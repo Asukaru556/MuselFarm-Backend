@@ -12,7 +12,7 @@ export class FarmsController {
   constructor(private readonly farmsService: FarmsService) {}
 
   @Post()
-  @Roles('admin', 'manager')
+  @Roles('admin')
   create(@Body() createFarmDto: CreateFarmDto) {
     return this.farmsService.create(createFarmDto);
   }
@@ -28,7 +28,7 @@ export class FarmsController {
   }
 
   @Put(':id')
-  @Roles('admin', 'manager')
+  @Roles('admin')
   update(@Param('id', ParseIntPipe) id: number, @Body() updateFarmDto: UpdateFarmDto) {
     return this.farmsService.update(id, updateFarmDto);
   }

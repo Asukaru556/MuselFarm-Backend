@@ -8,11 +8,11 @@ export class SensorsService {
   constructor(private prisma: PrismaService) {}
 
   async create(createSensorDto: CreateSensorDto) {
-    const locationExists = await this.prisma.location.findUnique({
+    const lineExists = await this.prisma.line.findUnique({
       where: { id: createSensorDto.line_id },
     });
-    if (!locationExists) {
-      throw new NotFoundException(`Линия/участок с ID ${createSensorDto.line_id} не найдена`);
+    if (!lineExists) {
+      throw new NotFoundException(`Канатная линия с ID ${createSensorDto.line_id} не найдена. Датчик не может быть привязан.`);
     }
 
     const sensorExists = await (this.prisma as any).sensor.findUnique({
@@ -43,10 +43,17 @@ export class SensorsService {
 
   async update(id: number, updateSensorDto: UpdateSensorDto) {
     await this.findOne(id);
+    
+    const { line_id, ...sensorData } = updateSensorDto;
 
     return (this.prisma as any).sensor.update({
       where: { id },
-      data: updateSensorDto,
+      data: {
+        ...sensorData,
+        line: {
+          connect: { id: line_id } // Исправлено обновление связи с линией для PUT-запроса
+        }
+      },
     });
   }
 

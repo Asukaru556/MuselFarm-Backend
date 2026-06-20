@@ -1,4 +1,4 @@
-import { IsString, IsNotEmpty, IsNumber, IsDateString, Min } from 'class-validator';
+import { IsString, IsNotEmpty, IsNumber, IsDateString, Min, IsIn } from 'class-validator';
 
 export class CreateBatchDto {
   @IsNumber()
@@ -19,5 +19,8 @@ export class CreateBatchDto {
 
   @IsString()
   @IsNotEmpty()
+  @IsIn(['growing', 'ready', 'lost', 'archived'], {
+    message: 'Статус партии должен быть: growing, ready, lost или archived',
+  })
   status!: string;
 }

@@ -21,13 +21,23 @@ export class LinesService {
   }
 
   async findAll() {
-    return this.prisma.line.findMany({
+    return (this.prisma.line as any).findMany({
+      include: { 
+        mussel_batches: true, 
+        sensors: true,
+        operational_events: true
+      },
     });
   }
 
   async findOne(id: number) {
-    const line = await this.prisma.line.findUnique({
+    const line = await (this.prisma.line as any).findUnique({
       where: { id },
+      include: { 
+        mussel_batches: true, 
+        sensors: true,
+        operational_events: true 
+      },
     });
     if (!line) {
       throw new NotFoundException(`Линия с ID ${id} не найдена`);

@@ -1,4 +1,4 @@
-import { IsString, IsNotEmpty, IsNumber, Min } from 'class-validator';
+import { IsString, IsNotEmpty, IsNumber, Min, IsIn } from 'class-validator';
 
 export class CreateLineDto {
   @IsNumber()
@@ -19,5 +19,8 @@ export class CreateLineDto {
 
   @IsString()
   @IsNotEmpty()
+  @IsIn(['active', 'inactive', 'maintenance'], {
+    message: 'Статус линии должен быть: active, inactive или maintenance',
+  })
   status!: string;
 }

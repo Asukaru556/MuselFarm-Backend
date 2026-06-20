@@ -15,6 +15,7 @@ export class ObservationsService {
       data: {
         ...dto,
         created_by: userId,
+        observed_at: dto.observed_at ? new Date(dto.observed_at) : new Date(),
       },
     });
   }
@@ -31,11 +32,16 @@ export class ObservationsService {
 
   async update(id: number, dto: UpdateObservationDto, userId: number) {
     await this.findOne(id);
+    const { line_id, batch_id, observed_at, ...observationData } = dto;
+
     return (this.prisma as any).bioObservation.update({
       where: { id },
       data: {
-        ...dto,
+        ...observationData,
         created_by: userId,
+        observed_at: observed_at ? new Date(observed_at) : undefined,
+        line: { connect: { id: line_id } },
+        batch: { connect: { id: batch_id } }
       },
     });
   }

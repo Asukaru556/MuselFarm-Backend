@@ -1,4 +1,4 @@
-import { IsString, IsNotEmpty, IsNumber, IsBoolean, IsOptional } from 'class-validator';
+import { IsString, IsNotEmpty, IsNumber, IsBoolean, IsOptional, IsDateString, IsIn } from 'class-validator';
 
 export class CreateObservationDto {
   @IsNumber()
@@ -15,6 +15,9 @@ export class CreateObservationDto {
 
   @IsString()
   @IsNotEmpty()
+  @IsIn(['отлично', 'хорошо', 'удовлетворительно', 'плохо', 'критично'], {
+    message: 'mussel_condition должен быть строго: отлично, хорошо, удовлетворительно, плохо, критично',
+  })
   mussel_condition!: string;
 
   @IsNumber()
@@ -44,4 +47,8 @@ export class CreateObservationDto {
   @IsString()
   @IsOptional()
   comment?: string;
+
+  @IsDateString()
+  @IsOptional()
+  observed_at?: string;
 }

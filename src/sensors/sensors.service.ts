@@ -51,7 +51,7 @@ export class SensorsService {
       data: {
         ...sensorData,
         line: {
-          connect: { id: line_id } // Исправлено обновление связи с линией для PUT-запроса
+          connect: { id: line_id }
         }
       },
     });
